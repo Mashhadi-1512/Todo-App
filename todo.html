@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        
+        <input type="textbox" id="text"/>
+        <input type="date" id="date-picker"/>
+        <button  onclick="addTodo()">
+            Add Todo
+        </button>
+        <div id="todo-list"></div>
+        <script>
+            // Model
+            let todoList;
+            const savedTodo=JSON.parse(localStorage.getItem('todo'));
+            if(Array.isArray(savedTodo)){
+               todoList=savedTodo;
+            }
+            else{
+                let  todoList=[
+            {title:'Get groceries',duedate:'2023-02-06',id:'d1'},
+            {title:'Wash Car',duedate:'2023-02-07',id:'d2'},
+            {title:'Make Dinner',duedate:'2023-02-04',id:'d3'}];
+           
+            }
+          
+            render();
+
+             // creates a Todo
+            function createTodo(title,dueDate){
+            
+                const id= ''+new Date().getTime();
+                   todoList.push({
+                    title:title,
+                    duedate:dueDate,
+                    id:id
+                   });
+                   saveTodo();
+            }
+              
+            // Deletes a Todo      
+            function removeTodo(idToDelete){
+
+                    todoList=todoList.filter(function(todo){
+                      if(todo.id===idToDelete)
+                      {
+                       return false;
+                      }
+                       else{
+                        return true;
+                       }
+                });
+                saveTodo();
+            }
+
+            //saves Todo
+            function saveTodo(){
+                localStorage.setItem('todo',JSON.stringify(todoList));
+            }
+
+            // Controller
+             function addTodo(){
+
+                   const text=document.getElementById('text');
+                   const title= text.value;   
+                   const datePicker=document.getElementById('date-picker');
+                   const dueDate=datePicker.value;
+
+                   createTodo(title,dueDate);
+
+                   render();              
+             }
+
+             function deleteTodo(event){
+
+                const deleteButton=event.target;
+                const idToDelete=deleteButton.id;
+                
+                removeTodo(idToDelete);
+                render();  
+             }
+
+             function onUpdate(event){
+                let updateButton=event.target;
+                let update=updateButton.dataset.TodoId;
+             }
+    function setEdit(idToEdit) {
+        todoList.forEach(function (todo) {
+          if (todo.id === idToEdit ) {
+            todo.isEditing = true;
+          }
+        });
+      }
+             function editTodo(event){
+                  let edit=event.target;
+                  let idToEdit=edit.dataset.todoId;
+                  setEdit(idToEdit);
+                  render();
+             }
+
+            //View
+             function render(){
+
+              document.getElementById('todo-list').innerHTML="" ;
+              todoList.forEach(function(todo){
+              let element=document.createElement('div');
+              element.innerText=todo.title+" "+todo.duedate;
+
+
+              if(todo.isEditing===true){
+                let textbox=document.createElement('text');
+                textbox.type='text';
+                textbox.id='edit-title'+todo.id;
+                element.appendChild(textbox);
+
+                let datePicker=document.createElement('input')
+                  datePicker.type='date';
+                  datePicker.id='edit-date'+todo.id;
+                  element.appendChild(datePicker);
+
+                let UpdateButton=document.createElement('button');
+                updateButton.innerText='Update';
+                updateButton.onClick=onUpadte;
+                upadteButton.dataset.TodoId=todo.id;
+              }
+
+              else{
+                let edit=document.createElement('button');
+              edit.innerText="Edit"
+              edit.style='margin-left:5px';
+              element.appendChild(edit);
+              edit.onclick=editTodo;
+              edit.dataset.todoId=todo.id;
+              }
+
+              let deleteButton= document.createElement('button');
+                deleteButton.innerText="Delete";
+                deleteButton.style='margin-left:12px';
+                
+                element.appendChild(deleteButton);
+                deleteButton.onclick=deleteTodo;  
+                deleteButton.id=todo.id;                                                                                                            
+            
+              let todoL=document.getElementById('todo-list');
+                todoL.appendChild(element);
+
+        //          let checkbox=document.createElement('input');
+        //          checkbox.type='checkbox';
+        //          element.prepend(checkbox);
+        //          checkbox.onchange=checkboxChecked;
+        //          checkbox.dataset.todoId = todo.id;
+        //          if (todo.isDone === true) {
+        //     checkbox.checked = true;
+        //   } else {
+        //     checkbox.checked = false;
+        //   }
+             
+            
+              
+          });
+             }
+             render();
+        </script>
+    </body>
+</html>
+
+ 
